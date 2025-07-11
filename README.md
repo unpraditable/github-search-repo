@@ -1,35 +1,55 @@
 # 📘 GitHubSearchApp Test Documentation
 
-This document explains how to run and understand the unit tests written for the `GithubSearchApp` React component.
+This document explains how to clone, install, run, and test the `GithubSearchApp` React component.
 
 ---
 
-## 📦 Prerequisites
-
-Ensure the following packages are installed in your project:
+## 📥 Cloning the Repository
 
 ```bash
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom
-```
-
-If you’re using Create React App, these are already preconfigured.
-If using Vite or Webpack manually, you may need to configure `jest.config.js` and set up Babel or ts-jest.
-
----
-
-## 📂 Test File Location
-
-Create the test file next to your component:
-
-```
-src/
-├── App.tsx
-└── App.test.tsx
+git clone https://github.com/unpraditable/github-search-app.git
+cd github-search-app
 ```
 
 ---
 
-## 🚀 How to Run the Tests
+## ⚙️ Installing Dependencies
+
+Use your preferred package manager:
+
+### NPM:
+
+```bash
+npm install
+```
+
+### Yarn:
+
+```bash
+yarn install
+```
+
+---
+
+## ▶️ Running the App
+
+### NPM:
+
+```bash
+npm start
+```
+
+### Yarn:
+
+```bash
+yarn start
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to view the app in your browser.
+
+---
+
+## 🚀 Running the Tests
 
 Using NPM:
 
@@ -51,7 +71,7 @@ yarn test
 
 ---
 
-## ✅ What is Covered
+## ✅ What is Covered in Unit Tests
 
 ### 1. **Basic UI Rendering**
 
