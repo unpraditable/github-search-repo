@@ -1,9 +1,18 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronDown,
+  faChevronUp,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
+import "./GithubSearchApp.css";
 
 interface Repo {
   id: number;
   name: string;
   html_url: string;
+  description: string;
+  stargazers_count: number;
 }
 
 interface UserWithRepos {
@@ -14,7 +23,8 @@ interface UserWithRepos {
 const GithubSearchApp: React.FC = () => {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<UserWithRepos[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
 
   const fetchUsersAndRepos = async () => {
     const trimmed = query.trim();
@@ -22,8 +32,8 @@ const GithubSearchApp: React.FC = () => {
       setUsers([]);
       return;
     }
-    setUsers([]);
-    setIsLoading(true);
+
+    setLoading(true);
     try {
       const userRes = await fetch(
         `https://api.github.com/search/users?q=${encodeURIComponent(
@@ -46,17 +56,20 @@ const GithubSearchApp: React.FC = () => {
               id: r.id,
               name: r.name,
               html_url: r.html_url,
+              description: r.description,
+              stargazers_count: r.stargazers_count,
             })),
           };
         })
       );
 
       setUsers(usersWithRepos);
+      setExpandedUsers(new Set());
     } catch (error) {
       console.error("GitHub API error:", error);
       setUsers([]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -66,45 +79,85 @@ const GithubSearchApp: React.FC = () => {
     }
   };
 
+  const toggleUser = (login: string) => {
+    const newSet = new Set(expandedUsers);
+    if (newSet.has(login)) {
+      newSet.delete(login);
+    } else {
+      newSet.add(login);
+    }
+    setExpandedUsers(newSet);
+  };
+
   return (
-    <div className="p-6 max-w-xl mx-auto font-sans">
-      <div className="flex mb-4">
+    <div className="app-container">
+      <h1 className="title">GitHub Repository Search</h1>
+
+      <div className="search-bar">
         <input
           type="text"
           placeholder="Search GitHub username..."
-          className="w-full p-2 border rounded mr-2"
+          className="search-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button
-          onClick={fetchUsersAndRepos}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-        >
+        <button onClick={fetchUsersAndRepos} className="search-button">
           Search
         </button>
       </div>
 
-      {isLoading && <p className="text-sm text-gray-500">Loading...</p>}
-      {users.map((user) => (
-        <div key={user.login} className="mb-6">
-          <h2 className="text-lg font-semibold">{user.login}</h2>
-          <ul className="list-disc ml-6">
-            {user.repos.map((repo) => (
-              <li key={repo.id}>
-                <a
-                  href={repo.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600"
-                >
-                  {repo.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      {loading && <p className="loading">Loading...</p>}
+
+      <div className="accordion">
+        {users.map((user) => {
+          const isOpen = expandedUsers.has(user.login);
+          return (
+            <div key={user.login} className="accordion-item">
+              <button
+                onClick={() => toggleUser(user.login)}
+                className="accordion-toggle"
+              >
+                <span>{user.login}</span>
+                <FontAwesomeIcon
+                  icon={isOpen ? faChevronUp : faChevronDown}
+                  className="icon"
+                />
+              </button>
+              {isOpen && (
+                <ul className="repo-list">
+                  {user.repos.map((repo) => (
+                    <li key={repo.id} className="repo-item">
+                      <a
+                        href={repo.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="repo-link"
+                      >
+                        <p className="inline-flex">
+                          <i>{repo.name}</i>
+                          <i>
+                            <div className="repo-stars">
+                              <FontAwesomeIcon
+                                icon={faStar}
+                                className="star-icon"
+                              />{" "}
+                              {repo.stargazers_count}
+                            </div>
+                          </i>
+                        </p>
+                        {repo.description && (
+                          <p className="repo-description">{repo.description}</p>
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
