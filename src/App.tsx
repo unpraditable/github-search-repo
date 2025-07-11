@@ -134,7 +134,7 @@ const GithubSearchApp: React.FC = () => {
                         rel="noopener noreferrer"
                         className="repo-link"
                       >
-                        <p className="inline-flex">
+                        <div className="inline-flex">
                           <i>{repo.name}</i>
                           <i>
                             <div className="repo-stars">
@@ -145,7 +145,7 @@ const GithubSearchApp: React.FC = () => {
                               {repo.stargazers_count}
                             </div>
                           </i>
-                        </p>
+                        </div>
                         {repo.description && (
                           <p className="repo-description">{repo.description}</p>
                         )}
