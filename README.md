@@ -1,46 +1,118 @@
-# Getting Started with Create React App
+# 📘 GitHubSearchApp Test Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This document explains how to run and understand the unit tests written for the `GithubSearchApp` React component.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📦 Prerequisites
 
-### `yarn start`
+Ensure the following packages are installed in your project:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+If you’re using Create React App, these are already preconfigured.
+If using Vite or Webpack manually, you may need to configure `jest.config.js` and set up Babel or ts-jest.
 
-### `yarn test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📂 Test File Location
 
-### `yarn build`
+Create the test file next to your component:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+src/
+├── App.tsx
+└── App.test.tsx
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🚀 How to Run the Tests
 
-### `yarn eject`
+Using NPM:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+npm test
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Or run a specific test file:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npx jest App.test.tsx
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Using Yarn:
 
-## Learn More
+```bash
+yarn test
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## ✅ What is Covered
+
+### 1. **Basic UI Rendering**
+
+- Ensures the search input and button are visible on screen.
+
+### 2. **Search Functionality**
+
+- Mocks GitHub API fetch calls.
+- Simulates user typing and clicking the Search button.
+- Verifies:
+  - The correct username is rendered.
+  - Repositories are listed with name, description, and star count.
+
+### 3. **Validation**
+
+- Prevents search API call if input is shorter than 2 characters.
+
+---
+
+## 🔎 Example Output Snapshot
+
+After typing `octocat` and clicking search:
+
+```
+> Hello-World
+My first repository on GitHub!
+★ 42 stars
+```
+
+---
+
+## 🧪 Test File Highlights
+
+### Mock Fetch:
+
+```ts
+(global.fetch as jest.Mock).mockImplementation((url) => { ... });
+```
+
+### Interaction:
+
+```ts
+fireEvent.change(input, { target: { value: "octocat" } });
+fireEvent.click(button);
+```
+
+### Assertions:
+
+```ts
+expect(screen.getByText("Hello-World")).toBeInTheDocument();
+expect(screen.getByText("42")).toBeInTheDocument();
+```
+
+---
+
+## 🛠️ Tips
+
+- Always reset fetch mocks between tests with `jest.clearAllMocks()`.
+- Use `await waitFor(...)` when testing async fetch results.
+- Use `screen.debug()` for manual troubleshooting output.
+
+---
+
+For help customizing tests, mocking API errors, or adding coverage for loading/error states, reach out!
